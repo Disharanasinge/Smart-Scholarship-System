@@ -118,17 +118,11 @@ http://127.0.0.1:5000
 ## Default Admin Credentials
 
 ```
-Email:    admin@scholarship.com
-Password: admin123
+Admin credentials are configured via  environment  variables. 
+Set ADMIN_EMAIL and ADMIN-PASSWORD before running.
 ```
 
 ---
-
-ADD DEBUG = FALSE BEFORE FINAL SUBMISSION
-Current:
-app.run(debug=True)
-Before submission:
-app.run(debug=False)
 
 Why:
 professional deployment practice
