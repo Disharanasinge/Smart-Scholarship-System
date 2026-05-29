@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Scholarships — Smart Scholarship ADMIN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+<div class="layout-wrapper">
+  <nav class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-shield-alt me-2"></i>Admin<span>Panel</span></div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link active" href="{{ url_for('admin_scholarships') }}"><i class="fas fa-graduation-cap"></i> Scholarships</a></li>
+     <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_users') }}"><i class="fas fa-users"></i> Manage Users</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_recommendations') }}"><i class="fas fa-lightbulb"></i> Recommendations</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_fraud_reports') }}"><i class="fas fa-flag"></i> Fraud Reports</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_notifications') }}"><i class="fas fa-bell"></i> Notifications</a></li>
+      <li class="nav-item mt-3"><a class="nav-link" href="{{ url_for('logout') }}" style="color:#f87171 !important;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </nav>
+  <div class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for c, m in messages %}
+        <div class="alert alert-{{ c }}">{{ m }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="page-header mb-0 flex-fill me-3">
+        <h2><i class="fas fa-graduation-cap me-2"></i>Manage Scholarships</h2>
+        <p>All published scholarship are visible to students. verify before adding or editing,</p>
+      </div>
+      <a href="{{ url_for('admin_add_scholarship') }}" class="btn btn-success">
+        <i class="fas fa-plus me-1"></i>Add Scholarship
+      </a>
+    </div>
+
+    <div class="card">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <span class="fw-bold text-muted small">
+      <i class="fas fa-list me-1"></i>Total Scholarships Listed
+    </span>
+    <span class="badge bg-primary">{{ scholarships | length }}</span>
+  </div>
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Provider</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Deadline</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in scholarships %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td class="fw-bold">{{ s.name }}</td>
+                <td>{{ s.provider }}</td>
+                <td><span class="badge bg-secondary">{{ s.category or 'General' }}</span></td>
+                <td>{{ s.amount or 'Not set' }}</td>
+                <td>{{ s.deadline or 'Not set' }}</td>
+                <td>
+                  <a href="{{ url_for('admin_edit_scholarship', sid=s.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form method="POST" action="{{ url_for('admin_delete_scholarship', sid=s.id) }}" class="d-inline delete-form">
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+              {% if not scholarships %}
+              <tr><td colspan="7" class="text-center text-muted py-4"><i class="fas fa-graduation-cap fa-2x mb-2 d-block" style="color:var(--border);"></i>No scholarships added yet. Click "Add Scholarship" to publish the first one.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

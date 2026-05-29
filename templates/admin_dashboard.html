@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Smart Scholarship ADMIN</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+<div class="layout-wrapper">
+
+  <!-- Admin Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-brand"><i class="fas fa-shield-alt me-2"></i>Admin<span>Panel</span></div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link active" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_scholarships') }}"><i class="fas fa-graduation-cap"></i> Scholarships</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_users') }}"><i class="fas fa-users"></i> Manage Users</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_recommendations') }}"><i class="fas fa-lightbulb"></i> Recommendations</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_fraud_reports') }}"><i class="fas fa-flag"></i> Fraud Reports</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_notifications') }}"><i class="fas fa-bell"></i> Notifications</a></li>
+      <li class="nav-item mt-3"><a class="nav-link" href="{{ url_for('logout') }}" style="color:#f87171 !important;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main -->
+  <div class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for c, m in messages %}
+        <div class="alert alert-{{ c }}">{{ m }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="page-header">
+      <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+      <p>Logged in as Admin. Review pending reports and recommendations regularly to keep the platform clean.</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="stat-card stat-blue">
+          <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+          <div>
+            <div class="number">{{ total_scholarships }}</div>
+            <div class="label">Scholarships Listed</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-green">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <div>
+            <div class="number">{{ total_students }}</div>
+            <div class="label">Students Registered </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-orange">
+          <div class="icon"><i class="fas fa-lightbulb"></i></div>
+          <div>
+            <div class="number">{{ pending_recs }}</div>
+            <div class="label">Awaiting Review</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-red">
+          <div class="icon"><i class="fas fa-flag"></i></div>
+          <div>
+            <div class="number">{{ pending_reports }}</div>
+            <div class="label">Fraud Reports Pending</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-12">
+        <div class="card p-3 d-flex flex-row gap-3 flex-wrap">
+          <a href="{{ url_for('admin_add_scholarship') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Add New Scholarship
+          </a>
+          <a href="{{ url_for('admin_recommendations') }}" class="btn btn-warning">
+            <i class="fas fa-lightbulb me-1"></i>Review Recommendations
+          </a>
+          <a href="{{ url_for('admin_fraud_reports') }}" class="btn btn-danger">
+            <i class="fas fa-flag me-1"></i>View Fraud Reports
+          </a>
+          <a href="{{ url_for('manage_users') }}" class="btn btn-secondary">
+            <i class="fas fa-users me-1"></i>Manage Users
+          </a>
+        </div>
+      </div>
+      <p class="text-muted small mb-4">
+      <i class="fas fa-info-circle me-1"></i>
+      Always verify scholarship details from the official source before publishing.
+    </p>
+    </div>
+
+    <!-- Recent Scholarships -->
+    <div class="card">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-list me-2"></i>Recently Added Scholarships</span>
+        <a href="{{url_for('admin_scholarships')}}" class="btn btn-sm btn-light">View ALL</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Provider</th>
+                <th>Category</th>
+                <th>Deadline</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in recent_scholarships %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td class="fw-bold">{{ s.name }}</td>
+                <td>{{ s.provider }}</td>
+                <td><span class="badge bg-secondary">{{ s.category or 'General' }}</span></td>
+                <td>{{ s.deadline or 'Not set' }}</td>
+                <td>
+                  <a href="{{ url_for('admin_edit_scholarship', sid=s.id) }}" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-trash me-1"></i>Edit</a>
+                  <form method="POST" action="{{ url_for('admin_delete_scholarship', sid=s.id) }}" class="d-inline delete-form">
+                    <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trsh me-1"></i>Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

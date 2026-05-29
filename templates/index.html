@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Scholarship — Find Trusted Scholarships</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+      <i class="fas fa-graduation-cap me-2"></i>Smart<span>Scholarship</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+        {% if session.get('user_id') %}
+          {% if session.get('role') == 'admin' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('student_home') }}">Scholarships</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('notifications') }}">
+              <i class="fas fa-bell"></i></a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link btn btn-primary text-white px-3" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-primary text-white px-3" href="{{ url_for('register') }}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    <div>
+    </div>
+  </div>
+</nav>
+
+<!-- Flash Messages -->
+<div class="container mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1>Find <span style="color:#fbbf24;">Verified</span> Scholarships You Can Trust</h1>
+        <p>SmartScholar helps students discover legitimate scholarships, avoid fraud, and apply with confidence.</p>
+        <form id="heroSearchForm">
+          <div class="hero-search">
+            <input id="heroSearchInput" type="text" placeholder="Search scholarships by name, category..." />
+            <button type="submit"><i class="fas fa-search me-1"></i> Search</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-lg-6 text-center mt-4 mt-lg-0">
+      <div class="p-4 rounded-3" style="background:rgba(255,255,255,0.12);">
+      <i class="fas fa-shield-alt fa-3x mb-3" style="color:#fbbf24;"></i>
+      <h4 style="color:#fff; font-weight:800;">India's First Student-Driven Scholarship Verification Platform</h4>
+      <p style="opacity:0.85; margin-top:0.8rem;">
+        We verify every scholarship before it goes live. Students rate, review, and report — keeping the database clean and trustworthy.
+      </p>
+      <a href="{{ url_for('register') }}" class="btn mt-3" style="background:#fbbf24; color:#000; font-weight:700; border-radius:8px; padding:10px 28px;">
+        Get Started — It's Free
+      </a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <h2 class="text-center mb-2" style="color:var(--primary);">Why Smart Scholarship?</h2>
+    <p class="text-center text-muted mb-5">We help you find real scholarships and avoid fake ones.</p>
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3"><i class="fas fa-shield-alt fa-2x" style="color:var(--primary);"></i></div>
+          <h5>Fraud Protection</h5>
+          <p class="text-muted small">Students can report suspicious scholarships. Admin reviews and removes fake ones quickly.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3"><i class="fas fa-star fa-2x" style="color:var(--accent);"></i></div>
+          <h5>Trust Score System</h5>
+          <p class="text-muted small">Every scholarship shows a trust score based on student ratings and fraud reports.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3"><i class="fas fa-users fa-2x" style="color:var(--secondary);"></i></div>
+          <h5>Community Driven</h5>
+          <p class="text-muted small">Students rate, comment, and recommend scholarships — making the database better for everyone.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5" style="background:var(--bg);">
+  <div class="container">
+    <h2 class="text-center mb-2">How SmartScholarship Works</h2>
+    <p class="text-center text-muted mb-5">Simple steps to find and verify your scholarship</p>
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div class="card p-4 h-100">
+          <div class="mb-3" style="font-size:2rem; color:var(--primary);">①</div>
+          <h6 class="fw-bold">Register Free</h6>
+          <p class="text-muted small">Create your student account in under a minute. No fees, no hidden charges.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 h-100">
+          <div class="mb-3" style="font-size:2rem; color:var(--primary);">②</div>
+          <h6 class="fw-bold">Search Scholarships</h6>
+          <p class="text-muted small">Filter by category, deadline, or eligibility. Find what matches your profile.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 h-100">
+          <div class="mb-3" style="font-size:2rem; color:var(--primary);">③</div>
+          <h6 class="fw-bold">Check Trust Score</h6>
+          <p class="text-muted small">See ratings and reviews from other students before applying.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card p-4 h-100">
+          <div class="mb-3" style="font-size:2rem; color:var(--primary);">④</div>
+          <h6 class="fw-bold">Apply Safely</h6>
+          <p class="text-muted small">Click the official website link and apply directly. No middlemen, no fake portals.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Scholarships -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-2">Recently added Scholarships</h2>
+    <p class="text-center text-muted mb-4">Login to view all scholarships and apply.</p>
+    <div class="row g-4">
+      {% for s in featured %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card scholarship-card h-100">
+          <div class="card-body">
+            <div class="mb-2">
+              <span class="badge" style="background:var(--bg);color:var(--muted);font-size:0.75rem;">{{ s.category or 'General' }}</span>
+            </div>
+            <div class="card-title">{{ s.name }}</div>
+            <div class="provider mb-2"><i class="fas fa-building me-1"></i>{{ s.provider }}</div>
+            <div class="deadline mb-2"><i class="fas fa-calendar me-1"></i>Deadline: {{ s.deadline or 'TBD' }}</div>
+            <div class="amount mb-3"><i class="fas fa-money-bill me-1"></i>{{ s.amount or 'Varies' }}</div>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm w-100">Login to View Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">
+        <i class="fas fa-user-plus me-2"></i>A glimpse of whats's inside 
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Fraud Warning -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h2 style="color:var(--risky);">⚠️ Beware of Fake Scholarships</h2>
+        <p class="text-muted mt-2">Fraudsters often create fake scholarship websites to collect personal information or money. SmartScholar helps you stay safe:</p>
+        <ul class="mt-3 text-muted" style="line-height:2;">
+          <li>Only verified scholarships from trusted sources</li>
+          <li>Community-powered fraud reporting</li>
+          <li>Admin-reviewed trust scores</li>
+          <li>Direct links to official websites only</li>
+        </ul>
+      </div>
+      <div class="col-md-6 text-center">
+        <div class="p-4 rounded-3" style="background:linear-gradient(135deg,#fee2e2,#fef9c3);">
+          <i class="fas fa-exclamation-triangle fa-4x mb-3" style="color:var(--risky);"></i>
+          <h5>Never Pay to Apply for a Scholarship</h5>
+          <p class="small text-muted mt-2">Legitimate scholarships are free to apply for. If you're asked to pay, it's a scam. Report it immediately.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>© 2026 SmartScholarship — Helping Students Find Scholarships &nbsp;|&nbsp; Built by <b>Disha J</b> & Kruthika S P</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
