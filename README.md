@@ -237,4 +237,4 @@ score = clamp between 0 and 100
 
 ## License
 
-This project is created as a BCA Final Year Academic Project.
+This project is created by *Disha J* as a BCA Final Year Academic Project.
